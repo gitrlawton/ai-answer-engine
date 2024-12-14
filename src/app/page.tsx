@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 type Message = {
   role: "user" | "ai";
   content: string;
+  sources?: string[];
 };
 
 export default function Home() {
@@ -33,20 +35,37 @@ export default function Home() {
       });
 
       // TODO: Handle the response from the chat API to display the AI response in the UI
+      if (!response.ok) {
+        throw new Error("Chat API request failed");
+      }
 
+      const data = await response.json();
 
+      if (data.response) {
+        console.log("\nReceived response:", data.response);
+      } else {
+        console.log("No response found in data.");
+      }
 
+      const aiMessage = {
+        role: "ai" as const,
+        content: data.response || "Sorry, I couldn't generate a response.",
+        sources: data.sources || [],
+      };
 
+      setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error("Error:", error);
+      const errorMessage = {
+        role: "ai" as const,
+        content: "An error occurred while processing your request.",
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
-
-  // TODO: Modify the color schemes, fonts, and UI as needed for a good user experience
-  // Refer to the Tailwind CSS docs here: https://tailwindcss.com/docs/customizing-colors, and here: https://tailwindcss.com/docs/hover-focus-and-other-states
   return (
     <div className="flex flex-col h-screen bg-gray-900">
       {/* Header */}
@@ -75,8 +94,50 @@ export default function Home() {
                     : "bg-cyan-600 text-white ml-auto"
                 }`}
               >
-                {msg.content}
+                {msg.role === "ai" ? (
+                  <ReactMarkdown
+                    className="prose prose-invert whitespace-normal break-words"
+                    components={{
+                      p: ({ children }) => <p className="mb-6">{children}</p>, // Add margin for paragraphs
+                      h1: ({ children }) => (
+                        <h1 className="text-2xl font-bold my-2">{children}</h1>
+                      ), // Adjust margin as needed
+                      h2: ({ children }) => (
+                        <h2 className="text-xl font-bold my-2">{children}</h2>
+                      ), // Adjust margin as needed
+                      h3: ({ children }) => (
+                        <h3 className="text-lg font-bold my-2">{children}</h3>
+                      ), // Adjust margin as needed
+                      ul: ({ children }) => (
+                        <ul className="list-disc ml-4 mb-6">{children}</ul>
+                      ), // Ensure proper styling for unordered lists
+                      li: ({ children }) => (
+                        <li className="mb-1">{children}</li>
+                      ), // Adjust margin for list items
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  msg.content
+                )}
               </div>
+              {msg.role === "ai" && msg.sources && msg.sources.length > 0 && (
+                <div className="text-xs text-gray-400 mt-2 ml-4">
+                  Sources:
+                  {msg.sources.map((source, index) => (
+                    <a
+                      key={index}
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 underline hover:text-cyan-400"
+                    >
+                      {new URL(source).hostname}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
           {isLoading && (
