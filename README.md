@@ -1,44 +1,70 @@
 # AI Answer Engine
 
-## Getting Started
+## Overview
 
-First, clone the repository and install the dependencies:
-```bash
-git clone https://github.com/team-headstart/ai-answer-engine.git
-```
+This project is a web application that allows uers to ask questions about the text content of a provided webpage url. This AI Answer Engine provides a chat interface for users to interact with an AI assistant and utilizes Groq for generating responses based on user input as well as Puppeteer for scraping content from URLs.
 
-Navigate to the project directory:
-```bash
-cd ai-answer-engine
-```
+## Features
 
-Then, install the dependencies:
+- **Chat Interface**: Users can send messages to the AI assistant and receive responses in real-time.
+- **Web Scraping**: The application extracts URLs from user messages and scrapes relevant content to provide context for the AI's responses.
+- **Token Management**: The application includes a utility function to truncate text responses to ensure they fit within specified limits.
+- **Rate Limiting**: Middleware is implemented to manage the number of requests to the API, preventing abuse and ensuring fair usage.
 
-```bash
-npm install
-```
+## Installation
 
-Then, run the development server:
-```bash
-npm run dev
-```
+To set up the project, ensure you have Node.js installed on your machine. Then, follow these steps:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Clone the repository:
 
-## Tasks
+   ```
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
 
-- Take a look at the TODOs throughout the repo, namely:
+2. Install the required packages:
 
-    - `src/app/page.tsx`: Update the UI and handle the API response as needed
- 
-    - `src/app/api/chat/route.ts`: Implement the chat API with Groq and web scraping with Cheerio and Puppeteer
- 
-    - `src/middleware.ts`: Implement the code here to add rate limiting with Redis
+   ```bash
+   npm install
+   ```
 
+3. Set up environment variables:
 
-## Learn More
+   Create a `.env` file in the root directory and add your Groq API key:
 
-To learn more about Next.js, take a look at the following resources:
+   ```plaintext
+   GROQ_API_KEY=your_groq_api_key
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
+
+1. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+2. Open your web browser and navigate to `http://localhost:3000` to access the chat interface.
+
+3. Type your message in the input field and press "Enter" or click "Send" to interact with the AI assistant. Make sure to include a URL in your message.
+
+4. The AI will generate its response based on the contents of the webpage located at the provided URL.
+
+## File Descriptions
+
+- **src/app/api/chat/route.ts**: Contains the API logic for handling chat requests, including message processing, URL extraction, and web scraping.
+- **src/app/page.tsx**: The main React component for rendering the chat interface and managing user interactions.
+- **src/app/layout.tsx**: Defines the layout structure of the application, including global styles and font settings.
+- **src/middleware.ts**: Implements rate limiting for the API to control the number of requests from users.
+
+## Dependencies
+
+- **Next.js**: A React framework for building server-side rendered applications.
+- **Puppeteer**: A library for controlling headless Chrome or Chromium, used for web scraping.
+- **Groq SDK**: A client for interacting with the Groq API to generate AI responses.
+- **@upstash/ratelimit**: A library for implementing rate limiting in the application.
+- **@upstash/redis**: A Redis client for managing rate limiting data.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
